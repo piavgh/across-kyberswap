@@ -1,0 +1,21 @@
+{
+  "name": "across-kyberswap",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "yarn clean && tsc --build",
+    "start": "yarn build && node dist/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@across-protocol/app-sdk": "^0.4.4",
+    "axios": "^1.8.4",
+    "dotenv": "^17.2.3",
+    "viem": "^2.22.8",
+    "zod": "^4.1.12"
+  }
+}
