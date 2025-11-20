@@ -21,13 +21,21 @@ export function createUserWallet(
 export async function getBalance(
   chain: Chain,
   userAddress: Address,
-  tokenAddress: Address
+  tokenAddress: Address | null
 ) {
   // Create a public client to make the read contract request
   const publicClient = createPublicClient({
     chain: chain,
     transport: http(),
   });
+
+  // If tokenAddress is null, get native ETH balance
+  if (tokenAddress === null) {
+    const balance = await publicClient.getBalance({
+      address: userAddress,
+    });
+    return balance;
+  }
 
   // Get the balance of the user for the token
   const balance = await publicClient.readContract({

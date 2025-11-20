@@ -20,6 +20,7 @@ export async function generateSwapCallData(
   amount: string,
   tokenIn: Address,
   tokenOut: Address,
+  slippageBps: number,
   sender: Address,
   recipient: Address,
   chain: string,
@@ -36,7 +37,7 @@ export async function generateSwapCallData(
           gasInclude: true,
         },
         headers: {
-          "X-Client-Id": "AcrossTest", // replace with your actual client ID
+          "X-Client-Id": "kyberswap-internal", // replace with your actual client ID
         },
       }
     );
@@ -51,11 +52,11 @@ export async function generateSwapCallData(
         routeSummary: quoteData.data.routeSummary,
         sender: sender,
         recipient: recipient,
-        slippageTolerance: 100
+        slippageTolerance: slippageBps,
       },
       {
         headers: {
-          "X-Client-Id": "AcrossTest", // replace with your actual client ID
+          "X-Client-Id": "kyberswap-internal", // replace with your actual client ID
         },
       }
     );
@@ -65,15 +66,19 @@ export async function generateSwapCallData(
       throw new Error("No calldata data returned");
     }
 
+    // Extract amountOut from quote for minExpectedInputTokenAmount calculation
+    const amountOut = quoteData.data.routeSummary.amountOut;
+
     logger.json(initialQuote ? "Initial swap data: " : "Updated swap data: ", {
       inputToken: tokenIn,
       amount: amount,
       outputToken: tokenOut,
-      to: quoteData.data.to,
+      amountOut: amountOut,
+      to: to,
       callData: calldata,
     });
 
-    return { calldata, to };
+    return { calldata, to, amountOut };
   } catch (error) {
     console.error("Error generating swap call data:", error);
     throw error;

@@ -1,14 +1,15 @@
-import { createAcrossClient } from "@across-protocol/app-sdk";
+import { createAcrossClient, type BuildMessageParams } from "@across-protocol/app-sdk";
 import dotenv from "dotenv";
 import { formatUnits } from "viem";
 import {
   destinationChain,
+  destinationSwapSlippageBps,
   inputAmount,
   kyberTokenIn,
   kyberTokenOut,
   originChain,
   originDepositToken,
-} from "./config.js";
+} from "./config/bridge.js";
 import { INTEGRATOR_ID } from "./utils/constants.js";
 import {
   createTransactionUrl,
@@ -20,7 +21,6 @@ import {
   generateApproveCallData,
   generateSwapCallData,
 } from "./utils/transactions.js";
-import { type CrossChainMessage } from "./utils/types.js";
 
 dotenv.config();
 
@@ -83,6 +83,7 @@ async function executeSwap() {
       inputAmount.toString(),
       kyberTokenIn,
       kyberTokenOut,
+      destinationSwapSlippageBps,
       userAddress,
       userAddress,
       destinationChain.name,
@@ -93,7 +94,7 @@ async function executeSwap() {
     logger.json("Initial swap call data", calldata);
 
     // Define the transactions executed after bridge transaction
-    const crossChainMessage: CrossChainMessage = {
+    const crossChainMessage: BuildMessageParams = {
       actions: [
         // Approve the swap contract to spend the input amount
         {
@@ -121,6 +122,7 @@ async function executeSwap() {
                 updatedOutputAmount.toString(),
                 kyberTokenIn,
                 kyberTokenOut,
+                destinationSwapSlippageBps,
                 userAddress,
                 userAddress,
                 destinationChain.name,
